@@ -12,16 +12,20 @@ Develop a deep learning model that recovers thin skeleton representations from t
 ### Data Generation
 **OSM Data Extraction**:
 - Select a subset of road types from OSM and retrieve the data.
+
 **Rasterization**:
 - Render roads as 256×256 pixel images, assigning varying thickness based on attributes (e.g., lane count, width).
+
 **Distortions**:
 - Introduce realistic distortions (blur, noise, etc.) to simulate real-world imperfections.
+
 **Ground Truth**:
 - Rasterize the roads with a thickness of one-pixel.
   
 ### Model Approaches
 **Baseline**:
 - Implement a U-Net to directly predict the thin skeleton from the noisy, thick input.
+
 **Advanced Option (choose one)**:
 - **Iterative Thinning**: Train a network to simulate a gradual de-thickening process.
 - **Multi-Task Learning**: Incorporate auxiliary tasks (e.g., distance maps or intersection cues) to support skeleton prediction.
@@ -30,12 +34,14 @@ Develop a deep learning model that recovers thin skeleton representations from t
 ### Testing & Verification
 **Verification**:
 - Include a description of how you tested and verified your implementation (e.g., unit tests, visual inspection of intermediate outputs, or controlled experiments with known outcomes).
+
 **Ensure correctness**:
 - Detail the steps taken to confirm that each component of your pipeline (data generation, network output, metric calculation) is working as expected.
   
 ### Evaluation
 **Qualitative Results**:
 - Include slides with visual examples showing the input image, ground truth skeleton, and model prediction.
+
 **Quantitative Metrics**:
 - **Test Loss**: Measures the quality / generalization using whatever loss you end up minimizing in the prokect.
 - **Mean Squared Error (MSE)**: Computed using the distance transform from the ground-truth thin-line image (not shifted).
@@ -49,10 +55,11 @@ Develop a deep learning model that recovers thin skeleton representations from t
 
 ### Implementation Requirements
 **Google Slides**:
- - Use the slides as both a progress log and your final presentation.
- - The first slides must display your final qualitative and quantitative results.
- - Slides should cover experimental setup, ablation study, testing/verification, and a concise explanation of your methodology.
- - Use your professional judgment to design the slides—do not ask for additional instructions on slide design.
+- Use the slides as both a progress log and your final presentation.
+- The first slides must display your final qualitative and quantitative results.
+- Slides should cover experimental setup, ablation study, testing/verification, and a concise explanation of your methodology.
+- Use your professional judgment to design the slides—do not ask for additional instructions on slide design.
+
 **Code**:
 - Organize your project as a Git repository containing Python scripts (no Jupyter notebooks).
 - The code must be runnable on Colab (e.g., via `%run script.py`) and be fast enough for GPU execution.
