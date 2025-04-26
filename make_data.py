@@ -106,7 +106,7 @@ def download_osm_data(config, cache_dir="cache"):
 
 def pick_random_intersections(nodes, n=500):
     if n > len(nodes):
-        print("Only " len(nodes) "found.")
+        print('Only ', len(nodes), ' found.')
         n = len(nodes)
     return nodes.sample(n)
 
