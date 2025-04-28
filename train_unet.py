@@ -72,6 +72,19 @@ class RoadSkeletonDataset(Dataset):
             target = self.transform(target)
         return image, target
 
+# --- Dice LOSS FUNCTION
+class DiceLoss(nn.Module):
+    def __init__(self):
+        super(DiceLoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1):
+        inputs = torch.sigmoid(inputs)
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        intersection = (inputs * targets).sum()
+        dice = (2.*intersection + smooth) / (inputs.sum() + targets.sum() + smooth)
+        return 1 - dice
+
 # --- MAIN TRAINING LOOP ---
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -85,7 +98,15 @@ def main():
     loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     model = UNet().to(device)
-    criterion = nn.BCEWithLogitsLoss()  # for binary segmentation
+    
+    if os.path.exists(MODEL_SAVE_PATH):
+        model.load_state_dict(torch.load(MODEL_SAVE_PATH))
+        print(f"Loaded existing model from {MODEL_SAVE_PATH}. Continuing training.")
+    else:
+        print("No existing model found. Starting fresh training.")
+    
+    #criterion = nn.BCEWithLogitsLoss()  # for binary segmentation
+    criterion = DiceLoss() # for Dice evaluation
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     print("Starting training...")
