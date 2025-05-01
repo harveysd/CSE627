@@ -53,11 +53,12 @@ class UNet(nn.Module):
 
 # --- CUSTOM DATASET ---
 class RoadSkeletonDataset(Dataset):
-    def __init__(self, image_dir, transform=None):
+    def __init__(self, image_dir, transform=None, augment=False):
         self.image_dir = image_dir
         self.images = sorted([f for f in os.listdir(image_dir) if f.startswith('image') and f.endswith('.png')])
         self.targets = sorted([f for f in os.listdir(image_dir) if f.startswith('target') and f.endswith('.png')])
         self.transform = transform
+        self.augment = augment
 
     def __len__(self):
         return len(self.images)
@@ -67,9 +68,24 @@ class RoadSkeletonDataset(Dataset):
         tgt_path = os.path.join(self.image_dir, self.targets[idx])
         image = Image.open(img_path).convert('L')
         target = Image.open(tgt_path).convert('L')
+        
+        # --- AUGMENTATION ---
+        if self.augment:
+            if np.random.rand() > 0.5:
+                image = transforms.functional.hflip(image)
+                target = transforms.functional.hflip(target)
+            if np.random.rand() > 0.5:
+                image = transforms.functional.vflip(image)
+                target = transforms.functional.vflip(target)
+            if np.random.rand() > 0.5:
+                angle = np.random.uniform(-15, 15)
+                image = transforms.functional.rotate(image, angle)
+                target = transforms.functional.rotate(target, angle)
+        
         if self.transform:
             image = self.transform(image)
             target = self.transform(target)
+        
         return image, target
 
 # --- Dice LOSS FUNCTION
@@ -94,7 +110,8 @@ def main():
         transforms.ToTensor()
     ])
 
-    dataset = RoadSkeletonDataset(DATA_DIR, transform=transform)
+    # Set augment to False to turn off augmentation
+    dataset = RoadSkeletonDataset(DATA_DIR, transform=transform, augment=True)
     loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     model = UNet().to(device)
