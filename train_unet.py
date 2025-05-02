@@ -16,9 +16,9 @@ from tqdm import tqdm
 # --- CONFIGURATION ---
 DATA_DIR = 'data/thinning'
 BATCH_SIZE = 8
-NUM_EPOCHS = 10
-LEARNING_RATE = 1e-3
-MODEL_SAVE_PATH = 'unet_model.pth'
+NUM_EPOCHS = 15
+LEARNING_RATE = 5e-3
+MODEL_SAVE_PATH = 'misaligned_unet_model.pth'
 IMAGE_SIZE = (256, 256)
 
 # --- U-NET MODEL DEFINITION ---
@@ -68,7 +68,7 @@ class RoadSkeletonDataset(Dataset):
         tgt_path = os.path.join(self.image_dir, self.targets[idx])
         image = Image.open(img_path).convert('L')
         target = Image.open(tgt_path).convert('L')
-        
+
         # --- AUGMENTATION ---
         if self.augment:
             if np.random.rand() > 0.5:
@@ -81,11 +81,18 @@ class RoadSkeletonDataset(Dataset):
                 angle = np.random.uniform(-15, 15)
                 image = transforms.functional.rotate(image, angle)
                 target = transforms.functional.rotate(target, angle)
-        
+
+        # --- MISALIGNMENT ---
+        if self.augment:
+            max_shift = 3  # pixels
+            dx = np.random.randint(-max_shift, max_shift + 1)
+            dy = np.random.randint(-max_shift, max_shift + 1)
+            target = transforms.functional.affine(target, angle=0, translate=(dx, dy), scale=1.0, shear=0)
+
         if self.transform:
             image = self.transform(image)
             target = self.transform(target)
-        
+
         return image, target
 
 # --- Dice LOSS FUNCTION
