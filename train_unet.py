@@ -13,11 +13,14 @@ from PIL import Image
 import numpy as np
 from tqdm import tqdm
 
+from torchvision.transforms import ToPILImage
+
 # --- CONFIGURATION ---
 DATA_DIR = 'data/thinning'
+EVAL_DIR = 'eaton_data/thinning'
 BATCH_SIZE = 8
 NUM_EPOCHS = 10
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 0.005
 MODEL_SAVE_PATH = 'unet_model.pth'
 IMAGE_SIZE = (256, 256)
 
@@ -85,6 +88,11 @@ class RoadSkeletonDataset(Dataset):
         if self.transform:
             image = self.transform(image)
             target = self.transform(target)
+        
+        #Debugging
+        # to_pil = ToPILImage()
+        # to_pil(image).show()  # Convert tensor to PIL and show
+        # to_pil(target).show()  # Convert tensor to PIL and show
         
         return image, target
 

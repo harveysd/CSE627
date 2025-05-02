@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from PIL import Image
 import numpy as np
 
-from train_unet import UNet, RoadSkeletonDataset, DATA_DIR, IMAGE_SIZE, MODEL_SAVE_PATH  # reuse config + model
+from train_unet import UNet, RoadSkeletonDataset, EVAL_DIR, IMAGE_SIZE, MODEL_SAVE_PATH  # reuse config + model
 
 # --- METRICS ---
 def compute_iou(pred, target):
@@ -49,7 +49,7 @@ def evaluate(model_path=MODEL_SAVE_PATH, num_samples=10):
         transforms.ToTensor()
     ])
 
-    dataset = RoadSkeletonDataset(DATA_DIR, transform=transform)
+    dataset = RoadSkeletonDataset(EVAL_DIR, transform=transform)
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     model = UNet().to(device)
